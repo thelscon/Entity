@@ -122,7 +122,7 @@ const enum EStatusFilter {
     Values = 'Values filter'
 }
 
-type SearchByType = Date | ERatingFilm | EFilmAward | EFilmGenres | string ;
+type SearchByType = Date | ERatingFilm | EFilmAward | EFilmGenres ;
 
 interface IFilm<R extends ERatingFilm = ERatingFilm , A extends Array<EFilmAward> = Array<EFilmAward>> {
     name : string ,
@@ -132,21 +132,21 @@ interface IFilm<R extends ERatingFilm = ERatingFilm , A extends Array<EFilmAward
 }
 
 type FactoryOverload<T> =
-    T extends Date ? {
+    T extends Extract<SearchByType , Date> ? {
         (filter : T) : Array<IFilm> ,
         (statusFilter : EStatusFilter.Range , filter : T , filterTo :  T) : Array<IFilm> ,
         (statusFilter : EStatusFilter.Values ,...values : Array<T>) : Array<IFilm>
     }
-    : T extends ERatingFilm ? {
+    : T extends Extract<SearchByType , ERatingFilm> ? {
         (filter : T) : Array<IFilm<T>> ,
         (statusFilter : EStatusFilter.Range , filter : T , filterTo :  T) : Array<IFilm<T>> ,
         (statusFilter : EStatusFilter.Values ,...values : Array<T>) : Array<IFilm<T>>
     }
-    : T extends EFilmAward ? {
+    : T extends Extract<SearchByType , EFilmAward> ? {
         (statusFilter : EStatusFilter.Match , filter : T) : Array<IFilm<ERatingFilm , Array<T>>> ,
         (statusFilter  :  EStatusFilter.Values , ...values : Array<T>) : Array<IFilm<ERatingFilm , Array<T>>>
     }
-    : T extends EFilmGenres ? {
+    : T extends Extract<SearchByType , EFilmGenres> ? {
         (statusFilter : EStatusFilter.Match , filter : T) : Array<ICategory<EFilmGenres>> ,
         (statusFilter  :  EStatusFilter.Values , ...values : Array<T>) : Array<ICategory<EFilmGenres>>
     }
