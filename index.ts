@@ -122,7 +122,7 @@ const enum EStatusFilter {
     Values = 'Values filter'
 }
 
-type SearchTyType = Date | ERatingFilm | EFilmAward | EFilmGenres ;
+type SearchByType = Date | ERatingFilm | EFilmAward | EFilmGenres | string ;
 
 interface IFilm<R extends ERatingFilm = ERatingFilm , A extends Array<EFilmAward> = Array<EFilmAward>> {
     name : string ,
@@ -130,23 +130,23 @@ interface IFilm<R extends ERatingFilm = ERatingFilm , A extends Array<EFilmAward
     rating : R ,
     listOfAwards : A
 }
-let a : Array<EFilmAward> = [EFilmAward.AACTAA  ]
+
 type FactoryOverload<T> =
-    T extends Extract<SearchTyType , Date> ? {
+    T extends Date ? {
         (filter : T) : Array<IFilm> ,
         (statusFilter : EStatusFilter.Range , filter : T , filterTo :  T) : Array<IFilm> ,
         (statusFilter : EStatusFilter.Values ,...values : Array<T>) : Array<IFilm>
     }
-    : T extends Extract<SearchTyType , ERatingFilm> ? {
+    : T extends ERatingFilm ? {
         (filter : T) : Array<IFilm<T>> ,
         (statusFilter : EStatusFilter.Range , filter : T , filterTo :  T) : Array<IFilm<T>> ,
         (statusFilter : EStatusFilter.Values ,...values : Array<T>) : Array<IFilm<T>>
     }
-    : T extends Extract<SearchTyType , EFilmAward> ? {
+    : T extends EFilmAward ? {
         (statusFilter : EStatusFilter.Match , filter : T) : Array<IFilm<ERatingFilm , Array<T>>> ,
         (statusFilter  :  EStatusFilter.Values , ...values : Array<T>) : Array<IFilm<ERatingFilm , Array<T>>>
     }
-    : T extends Extract<SearchTyType , EFilmGenres> ? {
+    : T extends EFilmGenres ? {
         (statusFilter : EStatusFilter.Match , filter : T) : Array<ICategory<EFilmGenres>> ,
         (statusFilter  :  EStatusFilter.Values , ...values : Array<T>) : Array<ICategory<EFilmGenres>>
     }
@@ -185,7 +185,7 @@ interface IFilms {
 }
 
 class Films implements IFilms {
-    private statusFilter !: Exclude<SearchTyType , SearchTyType> 
+    private statusFilter !: Exclude<SearchByType , SearchByType> 
     listOfFilms : Array<IFilm> = []
         
 
@@ -203,7 +203,7 @@ class Films implements IFilms {
         return []
     }
 
-    applyFiltersValue (currentFilter : Exclude<SearchTyType , SearchTyType>) : void {
+    applyFiltersValue (currentFilter : Exclude<SearchByType , SearchByType>) : void {
         this.statusFilter = currentFilter
     }
 }

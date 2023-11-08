@@ -1,5 +1,4 @@
 "use strict";
-let a = ["AACTA Awards" /* EFilmAward.AACTAA */];
 class Film {
     rating;
     listOfAwards;
